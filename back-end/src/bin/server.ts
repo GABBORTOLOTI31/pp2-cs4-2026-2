@@ -13,7 +13,8 @@ import { ExpressError } from '../types/error'
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '8888')
+const port = normalizePort(process.env.PORT || '8888npm create vite@latest front-end -- --template react-ts
+')
 app.set('port', port)
 
 /**
