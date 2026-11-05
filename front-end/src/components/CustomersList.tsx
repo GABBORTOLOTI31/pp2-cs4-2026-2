@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
-import type { Customer } from '../types/Customer'
+import { useState, useEffect } from "react";
+import type { Customer } from "../types/Customer";
+import { Link } from "react-router";
 
 type CustomerListProps = {
-  list?: Customer[]
-}
+  list?: Customer[];
+};
 
 export function CustomersList() {
-
-  const [customers, setCustomers] = useState<Customer[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([]);
 
   // Esta função está marcada com `async` porque, dentro dela,
   // há uma ou mais instruções assíncronas, isto é, que podem
@@ -17,7 +17,7 @@ export function CustomersList() {
     // Obtém o endereço do servidor de back-end a partir
     // da variável de ambiente VITE_API_BASE configurada
     // no arquivo .env.local
-    const apiHost = import.meta.env.VITE_API_BASE
+    const apiHost = import.meta.env.VITE_API_BASE;
 
     try {
       // Aqui, é onde acontece a chamada ao back-end. A palavra-chave
@@ -27,31 +27,29 @@ export function CustomersList() {
       // erro) for recebido.
       // Para usar `await` em uma função, é necessário marcá-la como
       // `async` na declaração. Essas duas palavras-chave (`async` e
-      // `await` SEMPRE andam juntas. 
-      const response = await fetch(`${apiHost}/customers`)
+      // `await` SEMPRE andam juntas.
+      const response = await fetch(`${apiHost}/customers`);
 
       // Aqui já tivemos uma resposta do servidor, e verificamos se ela
       // não contém erro
       if (!response.ok) {
-        throw new Error(`Erro HTTP ${response.status}`)
+        throw new Error(`Erro HTTP ${response.status}`);
       }
 
       // Mais uma instrução assíncrona (`await`), desta vez para extrair
       // os dados em formato JSON a partir da resposta recebida
-      const data: Customer[] = await response.json()
+      const data: Customer[] = await response.json();
 
       // Se tudo ocorreu bem até aqui, atualizamos a variável de estado
       // `customers` com os dados recebidos, usando a função `set`
       // correspondente
-      setCustomers(data)
-
-    }
-    // Se algo der errado dentro do bloco `try` (como, por exemplo, falta
-    // de conectividade com o servidor de back-end), o bloco `catch` é
-    // executado
-    catch (error) {
+      setCustomers(data);
+    } catch (error) {
+      // Se algo der errado dentro do bloco `try` (como, por exemplo, falta
+      // de conectividade com o servidor de back-end), o bloco `catch` é
+      // executado
       if (error instanceof Error) {
-        window.alert('ERRO: ' + error.message)
+        window.alert("ERRO: " + error.message);
       }
     }
   }
@@ -63,17 +61,20 @@ export function CustomersList() {
   // executado apenas uma vez, quando o componente estiver sendo
   // carregado na tela, para chamar fetchData().
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   return (
     <>
-    <h2 className="h2 mb-3">Listagem de Clientes</h2>
+      <h2 className="h2 mb-3">Listagem de Clientes</h2>
 
+      <p className="text-secondary">Total de clientes: {customers.length}</p>
 
-      <p className="text-secondary">
-        Total de clientes: {customers.length}
-      </p>
+      <div className="text-end mb-3">
+        <Link to={`/customers/new`} className="btn btn-outline-primary">
+          Novo cliente
+        </Link>
+      </div>
 
       <div className="table-responsive">
         <table className="table table-striped table-hover align-middle">
@@ -86,11 +87,14 @@ export function CustomersList() {
               <th scope="col">Telefone</th>
               <th scope="col">Município</th>
               <th scope="col">UF</th>
+              <th scope="col" className="text-end">
+                Ações
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            {customers.map(customer => (
+            {customers.map((customer) => (
               <tr key={customer.id}>
                 <td>{customer.id}</td>
                 <td>{customer.name}</td>
@@ -99,12 +103,21 @@ export function CustomersList() {
                 <td>{customer.phone}</td>
                 <td>{customer.municipality}</td>
                 <td>{customer.state}</td>
+                <td className="text-end">
+                  <Link
+                    to={`/customers/${customer.id}`}
+                    className="btn btn-outline-primary"
+                    aria-label={`Editar cliente ${customer.name}`}
+                  >
+                    Editar
+                  </Link>
+                </td>
               </tr>
             ))}
 
             {customers.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-center text-secondary">
+                <td colSpan={8} className="text-center text-secondary">
                   Nenhum cliente cadastrado.
                 </td>
               </tr>
@@ -113,5 +126,5 @@ export function CustomersList() {
         </table>
       </div>
     </>
-  )
+  );
 }
