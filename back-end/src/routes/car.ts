@@ -1,12 +1,14 @@
-import type { Request, Response } from "express";
-import { prisma } from "../database/client"; // ajuste ao caminho do seu projeto
 
-export async function create(req: Request, res: Response) {
-  try {
-    const car = await prisma.car.create({ data: req.body });
-    res.status(201).json(car);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao criar carro" });
-  }
-}
+import { Router } from "express";
+
+import * as controller from "../controllers/carController.ts";
+
+const router = Router();
+
+router.get("/", controller.retrieveAll);
+router.get("/:id", controller.retrieveOne);
+router.post("/", controller.create);
+router.put("/:id", controller.update);
+router.delete("/:id", controller.remove);
+
+export default router;
